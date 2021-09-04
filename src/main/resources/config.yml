@@ -1,0 +1,3 @@
+# passiveThirst: The number of ticks till a player will take one point of thirst. This will change an individual's time till next passive thirst immediately, only if done using commands and not the config.
+
+passiveThirst: 10800.0
