@@ -2,10 +2,8 @@ import kr.entree.spigradle.kotlin.*
 
 plugins {
     id("com.github.johnrengelman.shadow") version ("7.0.0")
-    `java-gradle-plugin`
     id("kr.entree.spigradle") version ("2.2.4")
-    kotlin("jvm") version ("1.5.21")
-    kotlin("kapt") version "1.5.30"
+    kotlin("jvm") version ("1.5.30")
 }
 
 group = "io.github.awesomemoder316.thirstremastered"
@@ -20,18 +18,20 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.dagger:dagger:2.38.1")
-    kapt("com.google.dagger:dagger-compiler:2.38.1")
+    //DI stuff
+    implementation("io.insert-koin:koin-core:3.1.2")
+
     implementation("dev.triumphteam:triumph-gui:3.0.3")
     implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
     implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
     implementation(bStats("2.2.1"))
-    implementation(kotlin("stdlib"))
-    spigot("1.17.1")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.30")
+    compileOnly(spigot("1.17.1"))
 }
 
 tasks.compileKotlin {
     kotlinOptions.jvmTarget = "16"
+    finalizedBy("bumpLatestVersionMd") //Make updater run all the time.
 }
 
 artifacts.archives(tasks.shadowJar)
@@ -39,11 +39,15 @@ artifacts.archives(tasks.shadowJar)
 tasks.shadowJar {
     archiveFileName.set(rootProject.name + "-" + rootProject.version + ".jar")
 
+
     relocate("dev.triumphteam", "io.github.awesomemoder316.lib.api")
     relocate("kotlin", "io.github.awesomemoder316.lib.dependencies")
     relocate("net.kyori", "io.github.awesomemoder316.lib.api")
     relocate("net.wesjd", "io.github.awesomemoder316.lib.api")
     relocate("org.bstats", "io.github.awesomemoder316.lib.api")
+    relocate("org.koin", "io.github.awesomemoder316.lib.api")
+
+
 }
 
 spigot {
@@ -52,25 +56,27 @@ spigot {
     description = "A plugin introducing thirst into Minecraft!"
     website = "https://github.com/awesomemoder316/ThirstRemastered"
 
-    /*commands {
-        create("") {
-            description = ""
-            usage = ""
+    commands {
+        create("ThirstRemastered") {
+            aliases = listOf("tr", "tm", "thirstr", "tremastered")
+            description = "The thirst remastered command."
+            usage = "/tr"
         }
     }
 
     permissions {
-        create("moderslib.receivepluginupdates") {
-            description = "Permission to view updates managed by ModersLib."
+        create("thirstremastered.configure") {
+            description = "Permission to configure ThirstRemastered for the server."
             defaults = "op"
         }
-    }*/
+    }
 }
 
 class BumpLatestVersionMd: Plugin<Project> {
     override fun apply(project: Project) {
-        project.task("bumpLastestVersionMd") {
-            val latestVersionMd = File("${project.rootDir}/latestVersion.md")
+        project.task("bumpLatestVersionMd") {
+            val latestVersionMd = File("${project.rootDir}/src/main/resources", "latestVersion.md")
+            if (!latestVersionMd.exists()) latestVersionMd.createNewFile()
             doLast {
                 val read = latestVersionMd.bufferedReader()
                 val oldVersion = read.readLine() //Only one line expected.
