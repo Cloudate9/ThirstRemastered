@@ -10,13 +10,16 @@ import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import java.util.*
 
-class PlayerJoin(private val iPlayerDataManager: IPlayerDataManager,
-                 private val plugin: JavaPlugin,
-                 private val adventure: BukkitAudiences): Listener {
+class StartStopPassiveThirst(private val iPlayerDataManager: IPlayerDataManager,
+                             private val plugin: JavaPlugin,
+                             private val adventure: BukkitAudiences): Listener {
+
+    //TODO(start and stop thirst on gamemode change. Do not show thirst and do thirst for creative or specator.)
 
     @EventHandler
     fun onJoin(e: PlayerJoinEvent) {
@@ -41,6 +44,15 @@ class PlayerJoin(private val iPlayerDataManager: IPlayerDataManager,
         }
         updatePassiveThirstTime(uuid)
         startPassiveThirst(uuid)
+    }
+
+    @EventHandler
+    fun onLeave(e: PlayerQuitEvent) {
+        val uuid = e.player.uniqueId
+
+        iPlayerDataManager.onlinePlayers[uuid]!!.passiveThirstTaskId?.let { Bukkit.getScheduler().cancelTask(it) }
+
+        iPlayerDataManager.removePlayer(uuid)
     }
 
     private fun startPassiveThirst(uuid: UUID) {
