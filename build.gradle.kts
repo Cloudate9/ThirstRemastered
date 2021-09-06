@@ -11,16 +11,18 @@ version = "1.0.0"
 
 repositories {
     codemc()
+    maven { url = uri("https://nexus-repo.jordanosterberg.com/repository/maven-releases/") }
+    maven { url = uri("https://repo.mattstudios.me/artifactory/public/") }
     mavenCentral()
     spigotmc()
     sonatype()
-    maven { url = uri("https://repo.mattstudios.me/artifactory/public/") }
 }
 
 dependencies {
     //DI stuff
     implementation("io.insert-koin:koin-core:3.1.2")
 
+    implementation("dev.jcsoftware:JScoreboards:2.1.1-RELEASE")
     implementation("dev.triumphteam:triumph-gui:3.0.3")
     implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
     implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
@@ -39,7 +41,7 @@ artifacts.archives(tasks.shadowJar)
 tasks.shadowJar {
     archiveFileName.set(rootProject.name + "-" + rootProject.version + ".jar")
 
-
+    relocate("dev.jcsoftware", "io.github.awesomemoder316.lib.api")
     relocate("dev.triumphteam", "io.github.awesomemoder316.lib.api")
     relocate("kotlin", "io.github.awesomemoder316.lib.dependencies")
     relocate("net.kyori", "io.github.awesomemoder316.lib.api")
@@ -68,6 +70,11 @@ spigot {
         create("thirstremastered.configure") {
             description = "Permission to configure ThirstRemastered for the server."
             defaults = "op"
+        }
+
+        create("thirstremastered.nothirst") {
+            description = "The player with the permission will never become thirsty, or be able to view their thirst."
+            defaults = "false"
         }
     }
 }

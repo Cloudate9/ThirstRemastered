@@ -1,5 +1,6 @@
 package io.github.awesomemoder316.thirstremastered.data
 
+import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
 import net.kyori.adventure.bossbar.BossBar
 
 interface IPlayerData {
@@ -9,6 +10,7 @@ interface IPlayerData {
     var ticksTillPassiveThirstDrop: Double?
     var viewTypes: ViewTypes
     var bossBar: BossBar?
+    var scoreboard: JPerPlayerMethodBasedScoreboard?
     var passiveThirstTaskId: Int?
 
     /**

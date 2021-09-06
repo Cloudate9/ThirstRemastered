@@ -1,5 +1,7 @@
 package io.github.awesomemoder316.thirstremastered.koin
 
+import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
+import dev.jcsoftware.jscoreboards.JPerPlayerScoreboard
 import io.github.awesomemoder316.thirstremastered.ThirstRemastered
 import io.github.awesomemoder316.thirstremastered.commands.ViewChangeCommand
 import io.github.awesomemoder316.thirstremastered.data.*
@@ -21,7 +23,7 @@ val plugin = ThirstRemastered.INSTANCE
     val data = module {
         factory<IPlayerData> { PlayerData() }
         factory<IPlayerDataConfig> { PlayerDataConfig(plugin) }
-        single<IPlayerDataManager> { PlayerDataManager(get(), get(), plugin) }
+        single<IPlayerDataManager> { PlayerDataManager(get(), get(), plugin, get(), adventure) }
         factory<ViewTypes>()
     }
 
@@ -31,5 +33,9 @@ val plugin = ThirstRemastered.INSTANCE
     }
 
     val listeners = module {
-        factory { StartStopPassiveThirst(get(), plugin, adventure) }
+        factory { StartStopPassiveThirst(get()) }
+    }
+
+    val libs = module {
+        factory { JPerPlayerMethodBasedScoreboard() }
     }

@@ -37,7 +37,7 @@ class ThirstRemastered: JavaPlugin() {
         saveConfig()
 
         startKoin {
-            modules(listOf(commands, data, gui, listeners))
+            modules(listOf(commands, data, gui, listeners, libs))
         }
 
         koinComponents = KoinComponents()

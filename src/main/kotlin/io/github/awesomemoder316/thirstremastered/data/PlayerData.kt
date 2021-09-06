@@ -1,13 +1,14 @@
 package io.github.awesomemoder316.thirstremastered.data
 
+import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
 import net.kyori.adventure.bossbar.BossBar
-
 class PlayerData: IPlayerData {
 
     override var thirstLevel: Int? = null
     override var ticksTillPassiveThirstDrop: Double? = null
     override var viewTypes: ViewTypes = ViewTypes.BOSSBAR
     override var bossBar: BossBar? = null
+    override var scoreboard: JPerPlayerMethodBasedScoreboard? = null
     override var passiveThirstTaskId: Int? = null
 
     /*
