@@ -22,13 +22,13 @@ dependencies {
     //DI stuff
     implementation("io.insert-koin:koin-core:3.1.2")
 
+    compileOnly(spigot("1.17.1"))
+    implementation(bStats("2.2.1"))
     implementation("dev.jcsoftware:JScoreboards:2.1.1-RELEASE")
     implementation("dev.triumphteam:triumph-gui:3.0.3")
     implementation("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
     implementation("net.wesjd:anvilgui:1.5.3-SNAPSHOT")
-    implementation(bStats("2.2.1"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.30")
-    compileOnly(spigot("1.17.1"))
 }
 
 tasks.compileKotlin {
