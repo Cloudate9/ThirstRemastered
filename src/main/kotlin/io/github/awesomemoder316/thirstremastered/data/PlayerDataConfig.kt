@@ -12,7 +12,7 @@ class PlayerDataConfig(private val plugin: JavaPlugin): IPlayerDataConfig {
             "The data in this file is not recommended to be manually edited.\n" +
                     "thirstLevel: The amount of thirst a player has, with 20 being the maximum and 0 being the minimum.\n" +
                     "passiveThirst: The number of ticks till the player takes one point of thirst.\n" +
-                    "viewType: The position where the amount of thirst is shown to the player. Possible values are \"ABOVEEXPBAR\", \"BOSSBAR\", and \"SCOREBOARD\""
+                    "viewType: The position where the amount of thirst is shown to the player. Possible values are \"BOSSBAR\" and \"SCOREBOARD\""
         )
 
         dataConfig.addDefault("thirstLevel", 20)

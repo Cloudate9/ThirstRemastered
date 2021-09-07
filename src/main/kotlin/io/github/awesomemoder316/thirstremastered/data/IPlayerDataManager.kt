@@ -1,6 +1,5 @@
 package io.github.awesomemoder316.thirstremastered.data
 
-import net.kyori.adventure.bossbar.BossBar
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -11,13 +10,13 @@ interface IPlayerDataManager {
     val onlinePlayers: HashMap<UUID, IPlayerData>
 
     /**
-     * Add a player that has just come online. Add a bossBar if the player uses it.
+     * Start managing a player's thirst. This also calls updateThirst()
      * @param uuid The player's UUID
      */
     fun addPlayer(uuid: UUID)
 
     /**
-     * Remove a player that just logged off. This saves the data, then removes the player that logged off.
+     * Stop managing a player's thirst. This saves the data to disk, then stops managing the player.
      * @param uuid The player's UUID
      */
     fun removePlayer(uuid: UUID)

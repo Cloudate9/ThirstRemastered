@@ -7,8 +7,8 @@ class PlayerData: IPlayerData {
     override var thirstLevel: Int? = null
     override var ticksTillPassiveThirstDrop: Double? = null
     override var viewTypes: ViewTypes = ViewTypes.BOSSBAR
+    override var isThirstNauseaSlowness = false
     override var bossBar: BossBar? = null
-    override var scoreboard: JPerPlayerMethodBasedScoreboard? = null
     override var passiveThirstTaskId: Int? = null
 
     /*
@@ -28,16 +28,12 @@ class PlayerData: IPlayerData {
         thirstLevel: Int,
         ticksTillPassiveThirstDrop: Double,
         viewTypes: ViewTypes,
-        bossBar: BossBar?,
-        passiveThirstTaskId: Int?
     ): IPlayerData {
 
         val newInstance = PlayerData()
         newInstance.thirstLevel = thirstLevel
         newInstance.ticksTillPassiveThirstDrop = ticksTillPassiveThirstDrop
         newInstance.viewTypes = viewTypes
-        newInstance.bossBar = bossBar
-        newInstance.passiveThirstTaskId = passiveThirstTaskId
         return newInstance
     }
 }

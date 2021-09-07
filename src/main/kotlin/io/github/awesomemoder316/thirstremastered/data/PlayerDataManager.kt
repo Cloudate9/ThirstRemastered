@@ -1,6 +1,7 @@
 package io.github.awesomemoder316.thirstremastered.data
 
 import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
+import io.github.awesomemoder316.thirstremastered.effects.ThirstEffects
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
@@ -16,14 +17,14 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
                         private val playerScoreboard: JPerPlayerMethodBasedScoreboard,
                         private val adventure: BukkitAudiences
 ): IPlayerDataManager {
-    
+
     /*
     IMPORTANT: iPlayerData will have vars, but as they have all no been populated, most of it is null.
     The vars will only contain the correct stuff once called using IPlayerData#create()
      */
-    
-    
+
     override val onlinePlayers = HashMap<UUID, IPlayerData>()
+
 
     override fun addPlayer(uuid: UUID) {
         val dataConfig = iPlayerDataConfig.getPlayer(uuid)
@@ -42,45 +43,32 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
 
 
         val viewPreferenceInString = dataConfig.getString("viewType")
-        val viewPreference = ViewTypes.valueOf(viewPreferenceInString!!.uppercase())
-        //No need to check, cause if value is wrong, will automatically default to BOSSBAR.
 
-        onlinePlayers[uuid] = iPlayerData.create(thirstLevel, ticksTillPassiveThirstDrop, viewPreference, null, null)
+        val viewPreference: ViewTypes = try {
+            ViewTypes.valueOf(viewPreferenceInString!!.uppercase()) //In case user puts wrong value
+        } catch (ex: IllegalArgumentException) {
+            ViewTypes.BOSSBAR
+        }
+
+        onlinePlayers[uuid] = iPlayerData.create(thirstLevel, ticksTillPassiveThirstDrop, viewPreference)
 
         val playerData = onlinePlayers[uuid]
         val player = Bukkit.getPlayer(uuid)
 
         when (playerData!!.viewTypes) {
-            ViewTypes.ABOVEEXPBAR -> {}
             ViewTypes.SCOREBOARD -> {
-
-                //In the scoreboard, the thirst left is displayed as "#", while the thirst taken is displayed as "|"
-
-                val visualisedThirst = StringBuilder().append("&3") //Blue colour code for thirst left.
-
-                for (x in 1..thirstLevel) visualisedThirst.append("#")
-
-                visualisedThirst.append("&c")
-
-                for (x in 1..(20 - thirstLevel)) visualisedThirst.append("|")
 
                 playerScoreboard.addPlayer(player)
                 playerScoreboard.setTitle(player,"Thirst level")
-                playerScoreboard.setLines(player,
-                    "",
-                    "--------------------",
-                    visualisedThirst.toString(),
-                    "Thirst left: &3 $thirstLevel",
-                    "--------------------",
-                    "")
-
-                playerData.scoreboard = playerScoreboard
+                //Don't add lines yet. Lines will be added in updateThirst().
 
             }
             //Else default to Boss bar
             else -> {
                 val name = Component.text("Thirst level")
-                val bossBar = BossBar.bossBar(name, 1f, BossBar.Color.BLUE, BossBar.Overlay.NOTCHED_10)
+
+                //Put a placeholder number for bossBar progress. Actual value will be updated in updateThirst().
+                val bossBar = BossBar.bossBar(name, 0f, BossBar.Color.BLUE, BossBar.Overlay.NOTCHED_10)
 
                 val aPlayer = adventure.player(uuid)
                 aPlayer.showBossBar(bossBar)
@@ -92,10 +80,12 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
             updatePassiveThirstTime(uuid)
             startPassiveThirst(uuid)
         }
+
+        updateThirst(uuid, 0) //So that thirst effects can activate if neccessary.
     }
 
     override fun removePlayer(uuid: UUID) {
-        val playerData = onlinePlayers[uuid]!!
+        val playerData = onlinePlayers[uuid] ?: return
         val dataConfig = iPlayerDataConfig.getPlayer(uuid)
         val dataFile = iPlayerDataConfig.getPlayerFile(uuid)
 
@@ -105,8 +95,19 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
         dataConfig.set("passiveThirst", playerData.ticksTillPassiveThirstDrop)
         dataConfig.set("viewType", playerData.viewTypes.name)
 
-        //No need to store boss bar. New boss bar is made on join using the thirst level.
+        //No need to store boss bar or scoreboard. New ones are made on add using the thirst level.
         iPlayerDataConfig.saveData(dataConfig, dataFile)
+
+        if (playerData.bossBar == null) {
+            //Player used scoreboard
+            val player = Bukkit.getPlayer(uuid)
+            if (player != null)
+                playerScoreboard.removePlayer(player)
+            /*
+            Don't do anything if null. We just want to stop unexpected scoreboard behaviour
+            when removing and reading players from manager while they are online.
+             */
+        }
 
         onlinePlayers.remove(uuid)
     }
@@ -161,14 +162,34 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
 
     override fun updateThirst(uuid: UUID, change: Int) {
         val playerData = onlinePlayers[uuid]!!
+        val originalThirst = playerData.thirstLevel!!
 
         //Not null as a proper instance of playerData has been created in IPlayerData#create()
-        playerData.thirstLevel = playerData.thirstLevel!!.plus(change)
+        playerData.thirstLevel = originalThirst + change
+        val thirstLevel = playerData.thirstLevel!!
 
-
+        //Update view.
         when (playerData.viewTypes) {
-            ViewTypes.ABOVEEXPBAR -> {}
-            ViewTypes.SCOREBOARD -> {}
+            ViewTypes.SCOREBOARD -> {
+
+                val visualisedThirst = StringBuilder().append("&3") //Blue colour code for thirst left.
+
+                for (x in 0 until thirstLevel) visualisedThirst.append("#")
+
+                visualisedThirst.append("&c")
+
+
+                for (x in 0 until 20 - thirstLevel) visualisedThirst.append("-")
+
+                playerScoreboard.setLines(Bukkit.getPlayer(uuid),
+                    "",
+                    "--------------------",
+                    visualisedThirst.toString(),
+                    "Thirst left: &3 $thirstLevel",
+                    "--------------------",
+                    "")
+
+            }
             //Else default to Boss bar
             else ->
                 playerData.bossBar!!
@@ -177,6 +198,23 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
                         //This is the new value
                     )
         }
+
+        if (thirstLevel <= 6 && !playerData.isThirstNauseaSlowness) {
+            ThirstEffects.startSlowness(uuid, this, plugin)
+            ThirstEffects.startNausea(uuid, this, plugin)
+        }
+
+        if (thirstLevel == 0) {
+            //Damage will auto stop once above 0 thirst.
+            ThirstEffects.dealDamage(uuid, this, plugin)
+        }
+
+        if (thirstLevel > 6 && playerData.isThirstNauseaSlowness) playerData.isThirstNauseaSlowness = false
+        //Nausea and slowness will auto stop.
+
+        if (originalThirst <= 0 && thirstLevel > 0)
+            //Means that the passive thirst is no longer running, needs restarting
+            startPassiveThirst(uuid)
     }
 
 }
