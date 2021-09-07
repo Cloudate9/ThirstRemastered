@@ -14,6 +14,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.net.URL
 
+
 @SpigotPlugin
 class ThirstRemastered: JavaPlugin() {
 
@@ -26,7 +27,6 @@ class ThirstRemastered: JavaPlugin() {
     var firstCheck = true
     var updateDetected = false
 
-
     override fun onEnable() {
 
         INSTANCE = this
@@ -36,18 +36,15 @@ class ThirstRemastered: JavaPlugin() {
         config.options().copyHeader()
         saveConfig()
 
-        startKoin {
-            modules(listOf(commands, data, gui, listeners, libs))
-        }
-
-        koinComponents = KoinComponents()
+        enableKoin()
 
         updateCheck()
 
         val pluginManager = Bukkit.getPluginManager()
-        pluginManager.registerEvents(koinComponents.startStopPassiveThirst, this)
+        pluginManager.registerEvents(koinComponents.startStopThirstManagement, this)
+        pluginManager.registerEvents(koinComponents.deathByThirst, this)
 
-        getCommand("thirstremastered")?.setExecutor(koinComponents.viewChangeCommand)
+        getCommand("thirstremastered")?.setExecutor(koinComponents.thirstRemasteredCommand)
     }
 
     override fun onDisable() {
@@ -55,6 +52,14 @@ class ThirstRemastered: JavaPlugin() {
 
         adventure.close()
         stopKoin()
+    }
+
+    private fun enableKoin() {
+        startKoin {
+            modules(listOf(commands, data, gui, listeners, libs))
+        }
+
+        koinComponents = KoinComponents()
     }
 
     private fun updateCheck() { //The proper method can be found in "ModersLib" by Awesomemoder316

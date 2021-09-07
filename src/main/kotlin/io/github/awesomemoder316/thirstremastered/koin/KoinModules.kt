@@ -1,15 +1,15 @@
 package io.github.awesomemoder316.thirstremastered.koin
 
 import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
-import dev.jcsoftware.jscoreboards.JPerPlayerScoreboard
 import io.github.awesomemoder316.thirstremastered.ThirstRemastered
-import io.github.awesomemoder316.thirstremastered.commands.ViewChangeCommand
+import io.github.awesomemoder316.thirstremastered.commands.ThirstRemasteredCommand
 import io.github.awesomemoder316.thirstremastered.data.*
 import io.github.awesomemoder316.thirstremastered.gui.INormalCommandGui
 import io.github.awesomemoder316.thirstremastered.gui.IPrivilegedCommandGui
 import io.github.awesomemoder316.thirstremastered.gui.NormalCommandGui
 import io.github.awesomemoder316.thirstremastered.gui.PrivilegedCommandGui
-import io.github.awesomemoder316.thirstremastered.listeners.StartStopPassiveThirst
+import io.github.awesomemoder316.thirstremastered.listeners.StartStopThirstManagement
+import io.github.awesomemoder316.thirstremastered.listeners.DeathByThirst
 import org.koin.dsl.factory
 import org.koin.dsl.module
 
@@ -17,7 +17,7 @@ val adventure = ThirstRemastered.adventure
 val plugin = ThirstRemastered.INSTANCE
 
     val commands = module {
-        single { ViewChangeCommand(get(), get(), get()) }
+        single { ThirstRemasteredCommand(get(), get(), get()) }
     }
 
     val data = module {
@@ -33,7 +33,8 @@ val plugin = ThirstRemastered.INSTANCE
     }
 
     val listeners = module {
-        factory { StartStopPassiveThirst(get()) }
+        factory { DeathByThirst(get(), plugin) }
+        factory { StartStopThirstManagement(get()) }
     }
 
     val libs = module {
