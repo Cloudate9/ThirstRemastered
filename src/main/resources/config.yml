@@ -1,3 +1,82 @@
-# passiveThirst: The number of ticks till a player will take one point of thirst. This will change an individual's time till next passive thirst immediately, only if done using commands and not the config.
+# Config explanation example:
+# field name(value type, $placeholder: placeholder explanation): Explanation for the field.
+# -----------------------------------------------------------------------------------------
+# For all Strings or List<String>, you can use Minecraft color codes using the '&' sign (i.e. &6 instead of §6 for Gold)
+# ----------------------------------------------------------------------------------------------------------------------
+# bottleStack(Natural number): The number of water bottles that can be stacked.
+# denyWaterCauldronInNether(boolean): If true, water in cauldrons will evaporate.
+# passiveThirst (Non-negative rational number): The number of ticks till a player will take one point of thirst. This will change an individual's time till next passive thirst immediately, only if done using commands and not the config.
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# water(no input type): The different subtypes of bottled water.
+# water.subtype(no input type): A subtype of bottled water.
+# water.subtype.colour(RGB colour code): The colour of the bottled water.
+# -----------------------------------------------------------------------
+# water.subtype.effect(no input type): A list of all effects for a type of water.
+# water.subtype.effect.0(no input type): An entry for an effect for a type of bottled water. Change 0 with another number to continue adding effects. E.g., the next entry is water.subtype.effect.1.
+# ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# water.subtype.effect.0.amplifier(0 <= x <= 255): The amplifier of the given effect. E.g., a value of 2 would give Effect II.
+# water.subtype.effect.0.duration(Natural number): The duration of the given effect, in ticks.
+# water.subtype.effect.0.name(String): You are strongly discouraged to use this, and to instead use a command/gui to change the effects. Regardless, if you insist, the effect names can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html. Use only the name of the field (e.g. SLOW for slowness).
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# water.subtype.name(String): The name of the bottled water will be for each player.
+# water.subtype.lore(List<String>, $value: The value of thirst each bottle of water will restore): The lore for the bottled water. The first line of the lore will be the water's original name in English, no matter what.
+# water.subtype.value(-20 <= x <= 20): The amount of thirst the water will restore. The minimum is -20, and the maximum is 20.
 
+bottleStack: 5
+denyWaterCauldronInNether: false
 passiveThirst: 10800.0
+water:
+  BOILED:
+    colour: "0000FF"
+    effect:
+      0:
+        amplifier: null
+        duration: null
+        name: null
+    name: "Boiled water"
+    lore: ["This restores $value points of thirst."]
+    value: 3
+  CONTAMINATED:
+    colour: "000000"
+    effect:
+      0:
+        amplifier: 1
+        duration: 200
+        name: "SLOW"
+      1:
+        amplifier: 1
+        duration: 200
+        name: "CONFUSION"
+    name: "Contaminated water"
+    lore: ["This restores $value points of thirst."]
+    value: 1
+  FRESH:
+    colour: "00FFFF"
+    effect:
+      0:
+        amplifier: null
+        duration: null
+        name: null
+    name: "Fresh water"
+    lore: ["This restores $value points of thirst"]
+    value: 3
+  SALT:
+    colour: "000080"
+    effect:
+      0:
+        amplifier: null
+        duration: null
+        name: null
+    name: "Salt water"
+    lore: ["This restores $value points of thirst"]
+    value: -1
+  SWAMP:
+    colour: "808000"
+    effect:
+      0:
+        amplifier: null
+        duration: null
+        name: null
+    name: "Swamp water"
+    lore: ["This restores $value points of thirst"]
+    value: 1
