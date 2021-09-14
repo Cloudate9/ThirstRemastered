@@ -36,6 +36,11 @@ tasks.compileKotlin {
     finalizedBy("bumpLatestVersionMd") //Make updater run all the time.
 }
 
+tasks.compileJava {
+    sourceCompatibility = "16"
+    targetCompatibility = "16"
+}
+
 artifacts.archives(tasks.shadowJar)
 
 tasks.shadowJar {
