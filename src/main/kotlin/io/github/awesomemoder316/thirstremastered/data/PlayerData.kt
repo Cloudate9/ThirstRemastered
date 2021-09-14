@@ -2,10 +2,12 @@ package io.github.awesomemoder316.thirstremastered.data
 
 import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
 import net.kyori.adventure.bossbar.BossBar
+import kotlin.properties.Delegates
+
 class PlayerData: IPlayerData {
 
-    override var thirstLevel: Int? = null
-    override var ticksTillPassiveThirstDrop: Double? = null
+    override var thirstLevel by Delegates.notNull<Int>() //This means lateinit Int
+    override var ticksTillPassiveThirstDrop by Delegates.notNull<Double>()
     override var viewTypes: ViewTypes = ViewTypes.BOSSBAR
     override var isThirstNauseaSlowness = false
     override var bossBar: BossBar? = null

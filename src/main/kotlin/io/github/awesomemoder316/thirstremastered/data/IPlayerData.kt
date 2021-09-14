@@ -1,13 +1,12 @@
 package io.github.awesomemoder316.thirstremastered.data
 
-import dev.jcsoftware.jscoreboards.JPerPlayerMethodBasedScoreboard
 import net.kyori.adventure.bossbar.BossBar
 
 interface IPlayerData {
     //Most of the time, these will not be null, unless an implementation was created withot the create() method.
 
-    var thirstLevel: Int?
-    var ticksTillPassiveThirstDrop: Double?
+    var thirstLevel: Int
+    var ticksTillPassiveThirstDrop: Double
     var viewTypes: ViewTypes
     var isThirstNauseaSlowness: Boolean //If true, it means that player should be below 6 health, and has thirst effects of nausea and slowness.
     var bossBar: BossBar?

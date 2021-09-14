@@ -76,7 +76,7 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
                 playerData.bossBar = bossBar //Set the boss bar. Previously null.
             }
         }
-        if (playerData.thirstLevel!! > 0) {
+        if (playerData.thirstLevel > 0) {
             updatePassiveThirstTime(uuid)
             startPassiveThirst(uuid)
         }
@@ -118,7 +118,7 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
             object: BukkitRunnable() {
                 override fun run() {
 
-                    val playerData = onlinePlayers[uuid]!!
+                    val playerData = onlinePlayers[uuid] ?: return
 
                     playerData.passiveThirstTaskId = null
                     playerData.ticksTillPassiveThirstDrop = plugin.config.getDouble("passiveThirst")
@@ -126,13 +126,13 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
                     Bukkit.getPlayer(uuid) ?: return //Shouldn't even happen, cause cancelled on Player leave.
                     updateThirst(uuid, -1)
 
-                    if (playerData.thirstLevel!! <= 0.0) return //Player should not have negative thirst.
+                    if (playerData.thirstLevel <= 0.0) return //Player should not have negative thirst.
 
                     updatePassiveThirstTime(uuid)
                     startPassiveThirst(uuid)
                 }
 
-            }.runTaskLater(plugin, onlinePlayers[uuid]!!.ticksTillPassiveThirstDrop!!.toLong())
+            }.runTaskLater(plugin, onlinePlayers[uuid]!!.ticksTillPassiveThirstDrop.toLong())
 
         onlinePlayers[uuid]!!.passiveThirstTaskId = passiveThirst.taskId
         //Stored so that it is possible to cancel.
@@ -145,14 +145,11 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
             override fun run() {
                 Bukkit.getPlayer(uuid) ?: return
 
-                val playerData = onlinePlayers[uuid]
+                val playerData = onlinePlayers[uuid] ?: return
 
-                playerData!!.ticksTillPassiveThirstDrop =
-                    playerData.ticksTillPassiveThirstDrop!!.minus(
-                        20
-                    )
+                playerData.ticksTillPassiveThirstDrop -= 20
 
-                if (playerData.ticksTillPassiveThirstDrop!! > 20)
+                if (playerData.ticksTillPassiveThirstDrop > 20)
                     updatePassiveThirstTime(uuid) //If less, startPassiveThirst will restart this task again.
                 //This is so that the timers don't get de-synced over time.
 
@@ -161,12 +158,12 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
     }
 
     override fun updateThirst(uuid: UUID, change: Int) {
-        val playerData = onlinePlayers[uuid]!!
-        val originalThirst = playerData.thirstLevel!!
+        val playerData = onlinePlayers[uuid] ?: return
+        val originalThirst = playerData.thirstLevel
 
         //Not null as a proper instance of playerData has been created in IPlayerData#create()
         playerData.thirstLevel = originalThirst + change
-        val thirstLevel = playerData.thirstLevel!!
+        val thirstLevel = playerData.thirstLevel
 
         //Update view.
         when (playerData.viewTypes) {
@@ -194,7 +191,7 @@ class PlayerDataManager(private val iPlayerDataConfig: IPlayerDataConfig,
             else ->
                 playerData.bossBar!!
                     .progress(
-                        (playerData.thirstLevel!!.toFloat() / 20)
+                        (playerData.thirstLevel.toFloat() / 20)
                         //This is the new value
                     )
         }

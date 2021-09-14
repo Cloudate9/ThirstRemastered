@@ -20,7 +20,7 @@ object ThirstEffects {
 
                 val playerData = iPlayerDataManager.onlinePlayers[uuid] ?: return //Player should no longer be managed.
 
-                if (playerData.thirstLevel!! > 0) { //Player is no longer dehydrated.
+                if (playerData.thirstLevel > 0) { //Player is no longer dehydrated.
                     return
                 }
                 if (player.world.difficulty == Difficulty.PEACEFUL) return //Don't do stuff on peaceful.
@@ -49,7 +49,7 @@ object ThirstEffects {
 
                 val playerData = iPlayerDataManager.onlinePlayers[uuid] ?: return //Player should no longer be managed.
 
-                if (playerData.thirstLevel!! > 6 || //Player is no longer thirsty enough.
+                if (playerData.thirstLevel > 6 || //Player is no longer thirsty enough.
                    player.world.difficulty == Difficulty.PEACEFUL) { //Don't do stuff on peaceful.
                     playerData.isThirstNauseaSlowness = false
                     return
@@ -79,7 +79,7 @@ object ThirstEffects {
 
                 val playerData = iPlayerDataManager.onlinePlayers[uuid] ?: return //Player should no longer be managed.
 
-                if (playerData.thirstLevel!! > 6 || //Player is no longer thirsty enough.
+                if (playerData.thirstLevel > 6 || //Player is no longer thirsty enough.
                     player.world.difficulty == Difficulty.PEACEFUL) { //Don't do stuff on peaceful.
                     playerData.isThirstNauseaSlowness = false
                     return
