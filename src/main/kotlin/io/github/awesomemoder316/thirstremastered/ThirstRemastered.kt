@@ -38,11 +38,9 @@ class ThirstRemastered: JavaPlugin() {
 
         enableKoin()
 
-        updateCheck()
+        registerListeners()
 
-        val pluginManager = Bukkit.getPluginManager()
-        pluginManager.registerEvents(koinComponents.startStopThirstManagement, this)
-        pluginManager.registerEvents(koinComponents.deathByThirst, this)
+        updateCheck()
 
         getCommand("thirstremastered")?.setExecutor(koinComponents.thirstRemasteredCommand)
     }
@@ -56,10 +54,17 @@ class ThirstRemastered: JavaPlugin() {
 
     private fun enableKoin() {
         startKoin {
-            modules(listOf(commands, data, gui, listeners, libs))
+            modules(listOf(commands, data, gui, libs, listeners, messages))
         }
 
         koinComponents = KoinComponents()
+    }
+
+    private fun registerListeners() {
+        val pluginManager = Bukkit.getPluginManager()
+        pluginManager.registerEvents(koinComponents.collectWater, this)
+        pluginManager.registerEvents(koinComponents.deathByThirst, this)
+        pluginManager.registerEvents(koinComponents.startStopThirstManagement, this)
     }
 
     private fun updateCheck() { //The proper method can be found in "ModersLib" by Awesomemoder316
