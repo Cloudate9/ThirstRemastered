@@ -1,0 +1,3 @@
+# deathMessage(String, $playerName: The name of the dead player.): The message that will be broadcasted when a player dies of thirst.
+
+deathMessage: "$playerName has died of thirst."
